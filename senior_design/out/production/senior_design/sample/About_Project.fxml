@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.web.*?>
+<?import javafx.scene.text.*?>
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane prefHeight="300.0" prefWidth="275.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.aboutProjectController">
+   <children>
+      <Text layoutX="40.0" layoutY="88.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Projext version:" wrappingWidth="109.2060546875" AnchorPane.leftAnchor="40.0" />
+      <Text layoutX="40.0" layoutY="114.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Ultrasonic Speaker 1.0" AnchorPane.leftAnchor="40.0" />
+      <Text layoutX="40.0" layoutY="218.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Yinxuan Ding" AnchorPane.leftAnchor="40.0" />
+      <Text layoutX="40.0" layoutY="192.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Nick Gorman" AnchorPane.leftAnchor="40.0" />
+      <Text layoutX="40.0" layoutY="166.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Antonio Gonzalez" AnchorPane.leftAnchor="40.0" />
+      <Text layoutX="40.0" layoutY="140.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Authoers: " AnchorPane.leftAnchor="40.0" />
+      <AnchorPane layoutX="4.0" layoutY="10.0" prefHeight="54.0" prefWidth="164.0" style="-fx-background-color: edc407;" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+         <children>
+            <Label layoutX="21.0" layoutY="10.0" prefHeight="36.0" prefWidth="146.0" text="Benchwarmers" textFill="#110e00">
+               <font>
+                  <Font name="Avenir Light" size="20.0" />
+               </font>
+            </Label>
+         </children>
+      </AnchorPane>
+      <Text layoutX="40.0" layoutY="244.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Date: Dec 14, 2020" />
+   </children>
+</AnchorPane>
