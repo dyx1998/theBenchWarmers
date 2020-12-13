@@ -162,10 +162,10 @@
                           <items>
                             <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0" style="-fx-background-color: white;">
                                  <children>
-                                    <TextField fx:id="frequencyField" layoutX="15.0" layoutY="41.0" prefHeight="27.0" prefWidth="97.0" />
-                                    <TextField fx:id="vcoField" layoutX="16.0" layoutY="106.0" prefHeight="27.0" prefWidth="95.0" />
-                                    <Label layoutX="15.0" layoutY="17.0" text="Carrier Frequency: in kHz" />
-                                    <Label layoutX="14.0" layoutY="81.0" text="VCO input voltage: in V" />
+                                    <TextField fx:id="frequencyField" layoutX="15.0" layoutY="41.0" prefHeight="27.0" prefWidth="97.0" promptText="47 ~ 57" />
+                                    <TextField fx:id="vcoField" layoutX="16.0" layoutY="106.0" prefHeight="27.0" prefWidth="95.0" promptText="0 ~ 2" />
+                                    <Label layoutX="15.0" layoutY="17.0" text="Carrier Frequency (kHz) " />
+                                    <Label layoutX="14.0" layoutY="81.0" text="VCO input voltage (V)" />
                                     <Hyperlink fx:id="developerLink" layoutX="10.0" layoutY="180.0" onAction="#goDeveloperLink" prefHeight="42.0" prefWidth="140.0" style="-fx-background-color: white;" text="Wanna know about Ultrasonic speaker?" textFill="#077be5" visited="true" wrapText="true" />
                                     <Button fx:id="plotBotton" contentDisplay="CENTER" layoutX="16.0" layoutY="146.0" mnemonicParsing="false" onAction="#showPlot" prefHeight="27.0" prefWidth="56.0" style="-fx-background-color: #3aea31;" text="PLOT" textFill="WHITE">
                                        <font>

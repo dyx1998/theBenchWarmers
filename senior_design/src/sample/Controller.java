@@ -1,6 +1,8 @@
 package sample;
 
 import com.fazecast.jSerialComm.SerialPort;
+import javafx.beans.InvalidationListener;
+import javafx.beans.Observable;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
@@ -23,6 +25,7 @@ import javafx.util.Duration;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 
@@ -86,11 +89,13 @@ public class Controller
 
     private Media media ;
 
-    private static final int MAX_FREQ = 35 ;
+    private static final int MAX_FREQ = 57 ;
 
-    private static final int MIN_FREQ = 10 ;
+    private static final int MIN_FREQ = 47 ;
 
-    private static final int MAX_AMP = 30 ;
+    private static final int MAX_AMP = 2 ;
+
+    private static final int MAX_READ = 100 ;
 
     private SerialPort sp = SerialPort.getCommPort(" ");
 
@@ -164,6 +169,18 @@ public class Controller
                 }
             });
 
+            volumeSlider.setValue(mediaPlayer.getVolume() * 5);
+            volumeLabel.setText("Volume:  5");
+            volumeSlider.valueProperty().addListener(new InvalidationListener() {
+                @Override
+                public void invalidated(Observable observable) {
+                    mediaPlayer.setVolume(volumeSlider.getValue()/10);
+
+                    int value = (int) Math.round(volumeSlider.getValue());
+                    volumeLabel.setText("Volume:  " + value);
+                }
+            });
+
             mediaPlayer.play();
         }
     }
@@ -216,6 +233,7 @@ public class Controller
         DataLine.Info infoT = new DataLine.Info(TargetDataLine.class, format) ;
 
         final ByteArrayOutputStream out = new ByteArrayOutputStream() ;
+
         try
         {
             final SourceDataLine sourceLine = (SourceDataLine) AudioSystem.getLine(infoS) ;
@@ -303,56 +321,76 @@ public class Controller
         double x = 0 ;
         double dx = 2 ;
 
-        if (frequencyField.getText().matches("[-+]?\\d*\\.?\\d+") )
+        if (frequencyField.getText().matches("[+]?\\d*\\.?\\d+") )
         {
             f = Double.parseDouble(frequencyField.getText()) ;
 
-            if (vcoField.getText().matches("[-+]?\\d*\\.?\\d+"))
+            if (vcoField.getText().matches("[+]?\\d*\\.?\\d+"))
             {
                 a = Double.parseDouble(vcoField.getText()) ;
 
-                // TO DO:
-                Double freqInput = f ;
-                Double ampInput = a ;
-                /*
-                try {
-                    sp.getOutputStream().write(freqInput.byteValue());
-                    sp.getOutputStream().write(ampInput.byteValue());
-                } catch (IOException e1) {
-                    e1.printStackTrace();
-                }
-                try {
-                    sp.getOutputStream().flush();
-                } catch (IOException e1) {
-                    e1.printStackTrace();
-                }
-                System.out.println("Sent carrier frequency: " + freqInput + " kHz") ;
-                System.out.println("Sent VCO amplitude: " + ampInput + " V") ;
-                try {
-                    Thread.sleep(500);
-                } catch (InterruptedException e1) {
-                    e1.printStackTrace();
-                } */
-
-                double angel = 2 * Math.PI * f/1000 ;
-
-                while (x < 60)
+                if ( f  >= MIN_FREQ || f <= MAX_FREQ )
                 {
-                    y = a * Math.sin(angel * x) ;
+                    if (a <= MAX_AMP)
+                    {
+                        double A1 = MAX_READ / (MAX_FREQ - MIN_FREQ) ;
+                        double b1 = A1 * MIN_FREQ - 0 ;
 
-                    series.getData().add(new XYChart.Data<String, Number>(Double.toString(Math.round(x)), y)) ;
+                        double A2 = MAX_READ / (MAX_AMP - 0) ;
+                        // TO DO:
+                        Double freqInput = f * A1 + b1 ;
+                        Double ampInput = a * A2 ;
+                        //System.out.println("volume is: " + a*A2/100);
+                        mediaPlayer.setVolume( a*A2 /100);
 
-                    x += dx ;
+
+                        try {
+                            sp.getOutputStream().write(freqInput.byteValue());
+                            //sp.getOutputStream().write(ampInput.byteValue());
+                        } catch (IOException e1) {
+                            e1.printStackTrace();
+                        }
+                        try {
+                            sp.getOutputStream().flush();
+                        } catch (IOException e1) {
+                            e1.printStackTrace();
+                        }
+                        System.out.println("Sent carrier frequency: " + freqInput + " kHz") ;
+                        //System.out.println("Sent VCO amplitude: " + ampInput + " V") ;
+                        try {
+                            Thread.sleep(500);
+                        } catch (InterruptedException e1) {
+                            e1.printStackTrace();
+                        }
+
+                        double angel = 2 * Math.PI * f / 1000;
+
+                        while (x < 60) {
+                            y = a * Math.sin(angel * x);
+
+                            series.getData().add(new XYChart.Data<String, Number>(Double.toString(Math.round(x)), y));
+
+                            x += dx;
+                        }
+                    }
+                    else
+                    {
+                        vcoField.setText("Out of Range");
+                    }
+                }
+                else
+                {
+                    frequencyField.setText("Out of Range");
                 }
             }
             else
             {
-                vcoField.setText("please enter valid number");
+                vcoField.setText("Invalid Input");
             }
         }
         else
         {
-            frequencyField.setText("please enter valid number");
+            frequencyField.setText("Invalid Input");
         }
         plot.getData().add(series) ;
     }
@@ -416,8 +454,8 @@ public class Controller
 
                 pitchLabel.setText("Pitch:  " + value);
 
-                Double intValue = new Double(value * (MAX_FREQ - MIN_FREQ) / pitchSlider.getMax());
-                /*
+                Double intValue = new Double(value * (MAX_FREQ - MIN_FREQ) / pitchSlider.getMax() + MIN_FREQ);
+
                 try {
                     sp.getOutputStream().write(intValue.byteValue());
                 } catch (IOException e1) {
@@ -428,24 +466,26 @@ public class Controller
                 } catch (IOException e1) {
                     e1.printStackTrace();
                 }
-                System.out.println("Sent frequency: " + intValue + " kHz");
+
                 try {
                     Thread.sleep(500);
                 } catch (InterruptedException e1) {
                     e1.printStackTrace();
-                } */
+                }
+                System.out.println("Sent frequency: " + intValue + " kHz");
             }
         });
 
+        /*
         volumeSlider.valueProperty().addListener(new ChangeListener<Number>() {
             @Override
             public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
 
                 int value = (int) Math.round(volumeSlider.getValue());
 
-                volumeLabel.setText("Pitch:  " + value);
+                volumeLabel.setText("Volume:  " + value);
 
-                Double intValue = new Double(value * (MAX_AMP) / volumeSlider.getMax());
+                Double intValue = new Double(value * (MAX_AMP) / volumeSlider.getMax() );
                 /*
                 try {
                     sp.getOutputStream().write(intValue.byteValue());
@@ -457,14 +497,15 @@ public class Controller
                 } catch (IOException e1) {
                     e1.printStackTrace();
                 }
-                System.out.println("Sent vco amplitude: " + intValue+ " V");
+
                 try {
                     Thread.sleep(500);
                 } catch (InterruptedException e1) {
                     e1.printStackTrace();
                 }*/
-            }
-        });
+                //System.out.println("Sent vco amplitude: " + intValue+ " V");
+            //}
+        //}); */
     }
 
 }
